@@ -1,9 +1,11 @@
 import styled from "styled-components";
 import { useState } from "react";
 import axios from "axios";
+import { Link, useNavigate } from "react-router-dom";
+
 function SingUp() {
   const [form, setForm] = useState({});
-
+  const navigate = useNavigate();
   function handleForm({ name, value }) {
     setForm({ ...form, [name]: value });
   }
@@ -11,11 +13,12 @@ function SingUp() {
     e.preventDefault();
     const body = form;
     /* setForm({}); */
-    const promise = axios.post(`https://localhost:5000/login`, body);
-    promise.then();
+    const promise = axios.post(`http://localhost:5000/singup`, body);
+    promise.then(() => navigate("/")).catch((res) => console.log(res));
   }
   return (
     <Container>
+      <h1>My Wallet</h1>
       <Form onSubmit={(e) => sendForm(e)}>
         <Input
           placeholder="Nome"
@@ -28,7 +31,7 @@ function SingUp() {
         />
         <Input
           placeholder="Email"
-          name="Email"
+          name="email"
           required
           type="email"
           onChange={(e) =>
@@ -44,8 +47,20 @@ function SingUp() {
             handleForm({ name: e.target.name, value: e.target.value })
           }
         />
-        <button type="submit">Entrar</button>
+        <Input
+          placeholder="Confirme a senha"
+          name="password"
+          required
+          type="password"
+          onChange={(e) =>
+            handleForm({ name: e.target.name, value: e.target.value })
+          }
+        />
+        <button type="submit">Cadastrar</button>
       </Form>
+      <Link to="/">
+        <p>Já tem uma conta? Entre agora!</p>
+      </Link>
     </Container>
   );
 }
@@ -100,5 +115,12 @@ const Input = styled.input`
   outline: none;
   border: none;
   margin-top: 13px;
+  ::placeholder {
+    font-weight: 400;
+    font-size: 20px;
+    line-height: 23px;
+    color: #000000;
+    padding: 15px;
+  }
 `;
 export default SingUp;

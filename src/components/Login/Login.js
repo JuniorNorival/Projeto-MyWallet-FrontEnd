@@ -1,19 +1,32 @@
 import { useState } from "react";
 import styled from "styled-components";
 import axios from "axios";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
+
 function Login() {
-  const [form, setForm] = useState({});
+  const [form, setForm] = useState({ email: "", password: "" });
+  const navigate = useNavigate();
 
   function handleForm({ name, value }) {
+    console.log(name, value);
     setForm({ ...form, [name]: value });
+    setErro(false);
   }
+  const [erro, setErro] = useState(false);
+
   function sendForm(e) {
     e.preventDefault();
     const body = form;
-    /* setForm({}); */
-    const promise = axios.post(`https://localhost:5000/login`, body);
-    promise.then();
+    const promise = axios.post(`http://localhost:5000/login`, body);
+    promise
+      .then((res) => {
+        navigate("/wallet");
+      })
+      .catch((res) => {
+        console.log(res);
+        setForm({ email: "", password: "" });
+        setErro(() => true);
+      });
   }
 
   return (
@@ -22,9 +35,10 @@ function Login() {
       <Form onSubmit={(e) => sendForm(e)}>
         <Input
           placeholder="Email"
-          name="Email"
+          name="email"
           required
           type="email"
+          value={form.email}
           onChange={(e) =>
             handleForm({ name: e.target.name, value: e.target.value })
           }
@@ -34,12 +48,15 @@ function Login() {
           name="password"
           required
           type="password"
+          value={form.password}
           onChange={(e) =>
             handleForm({ name: e.target.name, value: e.target.value })
           }
         />
         <button type="submit">Entrar</button>
+        {erro ? <p>Usúario ou senha incorretos</p> : ""}
       </Form>
+
       <Link to="/singup">
         <p>Primeira vez? Cadastre-se!</p>
       </Link>
@@ -90,6 +107,12 @@ const Form = styled.form`
     color: #ffffff;
     margin: 15px;
   }
+  p {
+    font-weight: 400;
+    font-size: 15px;
+    line-height: 18px;
+    color: red;
+  }
 `;
 const Input = styled.input`
   width: 90vw;
@@ -99,6 +122,13 @@ const Input = styled.input`
   outline: none;
   border: none;
   margin-top: 13px;
+  ::placeholder {
+    font-weight: 400;
+    font-size: 20px;
+    line-height: 23px;
+    color: #000000;
+    padding: 15px;
+  }
 `;
 
 export default Login;
