@@ -1,100 +1,91 @@
 import { useState } from "react";
 import styled from "styled-components";
 import axios from "axios";
-import { Link, useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 
-function Login() {
-  const [form, setForm] = useState({ email: "", password: "" });
+function NewInn() {
+  const [form, setForm] = useState({ value: "", description: "" });
+  const token = JSON.parse(localStorage.getItem("mywallet"));
+  const config = {
+    headers: {
+      Authorization: `Bearer ${token}`,
+    },
+  };
   const navigate = useNavigate();
-
+  console.log(config);
   function handleForm({ name, value }) {
     setForm({ ...form, [name]: value });
-    setErro(false);
   }
-  const [erro, setErro] = useState(false);
-
   function sendForm(e) {
     e.preventDefault();
     const body = form;
-    const promise = axios.post(`http://localhost:5000/login`, body);
+    const promise = axios.post(`http://localhost:5000/wallet`, body, config);
     promise
-      .then((res) => {
-        console.log(res.data);
-        localStorage.setItem("mywallet", JSON.stringify(res.data));
+      .then(() => {
         navigate("/wallet");
       })
       .catch((res) => {
         console.log(res);
-        setForm({ email: "", password: "" });
-        setErro(() => true);
+        setForm({ value: "", description: "" });
       });
   }
-
+  console.log(form);
   return (
     <Container>
-      <h1>My Wallet</h1>
+      <Header>
+        <h1>Nova Entrada</h1>
+      </Header>
+
       <Form onSubmit={(e) => sendForm(e)}>
         <Input
-          placeholder="Email"
-          name="email"
+          placeholder="Valor"
+          name="value"
           required
-          type="email"
-          value={form.email}
+          type="number"
+          value={form.value}
           onChange={(e) =>
-            handleForm({ name: e.target.name, value: e.target.value })
+            handleForm({ name: e.target.name, value: Number(e.target.value) })
           }
         />
         <Input
-          placeholder="Senha"
-          name="password"
+          placeholder="Descrição"
+          name="description"
           required
-          type="password"
-          value={form.password}
+          type="text"
+          value={form.description}
           onChange={(e) =>
             handleForm({ name: e.target.name, value: e.target.value })
           }
         />
-        <button type="submit">Entrar</button>
-        {erro ? <p>Usúario ou senha incorretos</p> : ""}
+        <button type="submit">Salvar Entrada</button>
       </Form>
-
-      <Link to="/singup">
-        <p>Primeira vez? Cadastre-se!</p>
-      </Link>
     </Container>
   );
 }
-
 const Container = styled.div`
   background-color: #8c11be;
   height: 100vh;
   width: 100vw;
+`;
+const Header = styled.div`
+  width: 90vw;
+  margin: 25px auto;
   display: flex;
-  flex-direction: column;
-  justify-content: center;
-  align-items: center;
+  justify-content: space-between;
   h1 {
-    font-family: "Saira Stencil One";
-    font-style: normal;
-    font-weight: 400;
-    font-size: 32px;
-    line-height: 50px;
-    color: #ffffff;
-  }
-  p {
     font-weight: 700;
-    font-size: 15px;
-    line-height: 18px;
+    font-size: 26px;
+    line-height: 31px;
     color: #ffffff;
   }
 `;
+
 const Form = styled.form`
   display: flex;
   flex-direction: column;
   justify-content: center;
   align-items: center;
-  width: 100vw;
-  margin: 20px 25px;
+  margin: 20px auto;
 
   button {
     width: 90vw;
@@ -132,5 +123,4 @@ const Input = styled.input`
     padding: 15px;
   }
 `;
-
-export default Login;
+export default NewInn;
