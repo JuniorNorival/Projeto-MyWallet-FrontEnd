@@ -3,7 +3,7 @@ import { useState } from "react";
 import axios from "axios";
 import { Link, useNavigate } from "react-router-dom";
 
-function SingUp() {
+function SignUp() {
   const [form, setForm] = useState({});
   const navigate = useNavigate();
   function handleForm({ name, value }) {
@@ -12,9 +12,24 @@ function SingUp() {
   function sendForm(e) {
     e.preventDefault();
     const body = form;
-    /* setForm({}); */
-    const promise = axios.post(`http://localhost:5000/singup`, body);
-    promise.then(() => navigate("/")).catch((res) => console.log(res));
+    if (body.password !== body.confirmPassword) {
+      return alert("As senhas não correspondem");
+    }
+
+    const promise = axios.post(`http://localhost:5000/sign-up`, body);
+    promise
+      .then(() => {
+        alert("Usuário cadastrado com sucesso");
+        navigate("/");
+      })
+      .catch((res) => {
+        if (res.response.status === 409) {
+          alert("Email Já cadastrado");
+        } else {
+          console.log(res);
+          alert("Erro ao cadastrar usuario");
+        }
+      });
   }
   return (
     <Container>
@@ -49,7 +64,7 @@ function SingUp() {
         />
         <Input
           placeholder="Confirme a senha"
-          name="password"
+          name="confirmPassword"
           required
           type="password"
           onChange={(e) =>
@@ -123,4 +138,4 @@ const Input = styled.input`
     padding: 15px;
   }
 `;
-export default SingUp;
+export default SignUp;

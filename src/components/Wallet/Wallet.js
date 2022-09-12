@@ -2,9 +2,11 @@ import { useState, useEffect } from "react";
 import styled from "styled-components";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
-import { AddCircleOutline } from "react-ionicons";
-import { RemoveCircleOutline } from "react-ionicons";
-import { ExitOutline } from "react-ionicons";
+import {
+  IoAddCircleOutline,
+  IoRemoveCircleOutline,
+  IoExitOutline,
+} from "react-icons/io5";
 
 function Wallet() {
   const token = JSON.parse(localStorage.getItem("mywallet"));
@@ -21,6 +23,7 @@ function Wallet() {
     promise.then((res) => {
       setEntry(res.data);
     });
+    // eslint-disable-next-line
   }, []);
 
   const total = entry.records
@@ -28,17 +31,16 @@ function Wallet() {
     .reduce((a, b) => a + b, 0)
     .toFixed(2);
 
-  console.log(total);
   return (
     <Container>
       <Header>
         <h1>Ola, {entry.name}</h1>
-        <ExitOutline
-          color={"#ffffff"}
-          height="24px"
-          width="24px"
+        <IoExitOutline
+          color="#ffffff"
+          fontSize="25px"
+          style={{ cursor: "pointer" }}
           onClick={() => {
-            localStorage.setItem("mywallet", JSON.stringify(""));
+            localStorage.removeItem("mywallet");
             const loggout = window.confirm("Deseja sair ?");
             if (!loggout) return;
             navigate("/");
@@ -65,7 +67,7 @@ function Wallet() {
       <Footer>
         <div onClick={() => navigate("/newinn")}>
           <span>
-            <AddCircleOutline color={"#ffffff"} height="22px" width="22px" />
+            <IoAddCircleOutline color="#ffffff" fontSize="25px" />
           </span>
           <p>
             Nova <br /> Entrada
@@ -73,7 +75,7 @@ function Wallet() {
         </div>
         <div onClick={() => navigate("/newout")}>
           <span>
-            <RemoveCircleOutline color={"#ffffff"} height="22px" width="22px" />
+            <IoRemoveCircleOutline color="#ffffff" fontSize="25px" />
           </span>
           <p>
             Nova <br /> Saída
@@ -137,6 +139,7 @@ const Footer = styled.div`
     border-radius: 5px;
     border: none;
     position: relative;
+    cursor: pointer;
     span {
       position: absolute;
       top: 5px;

@@ -25,7 +25,7 @@ function NewOut() {
         navigate("/wallet");
       })
       .catch((res) => {
-        console.log(res);
+        alert("Prencha todos os dados");
         setForm({ value: "", description: "" });
       });
   }
