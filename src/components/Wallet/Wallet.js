@@ -16,6 +16,7 @@ function Wallet() {
     },
   };
   const [entry, setEntry] = useState({ name: "" });
+  const [refresh, setRefresh] = useState(false);
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -24,13 +25,23 @@ function Wallet() {
       setEntry(res.data);
     });
     // eslint-disable-next-line
-  }, []);
+  }, [refresh]);
 
+  function deleteRecord(id) {
+    const confirm = window.confirm("Deseja Excluir ?");
+    if (!confirm) {
+      return;
+    }
+    const promise = axios.delete(`http://localhost:5000/wallet/${id}`, config);
+    promise
+      .then((res) => setRefresh(!refresh))
+      .catch(() => alert("Erro ao Excluir"));
+  }
   const total = entry.records
     ?.map((item) => item.value)
     .reduce((a, b) => a + b, 0)
     .toFixed(2);
-
+  console.log(entry);
   return (
     <Container>
       <Header>
@@ -55,9 +66,12 @@ function Wallet() {
                   <span>{rec.date}-</span>
                   {rec.description}
                 </p>
-                <Values color={rec.value}>
-                  {Math.abs(rec.value).toFixed(2)}
-                </Values>
+                <p>
+                  <Values color={rec.value}>
+                    {Math.abs(rec.value).toFixed(2)}
+                    <span onClick={() => deleteRecord(rec._id)}> x</span>
+                  </Values>
+                </p>
               </div>
             ))
           : ""}
@@ -165,6 +179,10 @@ const Values = styled.div`
   font-size: 16px;
   line-height: 19px;
   color: ${(props) => (props.color < 0 ? "#C70000" : "#03AC00")};
+  span {
+    cursor: pointer;
+    margin-left: 5px;
+  }
 `;
 const Total = styled.div`
   position: absolute;
