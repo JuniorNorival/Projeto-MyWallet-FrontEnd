@@ -55,7 +55,9 @@ function Wallet() {
                   <span>{rec.date}-</span>
                   {rec.description}
                 </p>
-                <Values color={rec.value}>{rec.value.toFixed(2)}</Values>
+                <Values color={rec.value}>
+                  {Math.abs(rec.value).toFixed(2)}
+                </Values>
               </div>
             ))
           : ""}
